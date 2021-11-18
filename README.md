@@ -71,7 +71,7 @@ The sample demonstrates how to use an Azure SQL Database with Blazor Server App.
 
 ## About the code
 
-The code is as is coming out of standard Visual Studio 2019 **Blazor Server App** template. The only difference here is that instead getting hardcoded list of Summaries inside [GetForecastAsync method](https://github.com/aremo-ms/ms-identity-dotnet-blazor-azure-sql/blob/77ef2e3077620992736f06bbb3bdad1c904a1760/Data/WeatherForecastService.cs#L20), it request it out of Azure SQL Server.
+The code is as is coming out of standard Visual Studio 2019 **Blazor Server App** template. The only difference here is that instead of getting hardcoded list of Summaries inside [GetForecastAsync method](https://github.com/aremo-ms/ms-identity-dotnet-blazor-azure-sql/blob/77ef2e3077620992736f06bbb3bdad1c904a1760/Data/WeatherForecastService.cs#L20), a request is done out of Azure SQL Server.
 
    ```csharp
    public async Task<WeatherForecast[]> GetForecastAsync(DateTime startDate)
