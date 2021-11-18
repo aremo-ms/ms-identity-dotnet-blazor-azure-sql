@@ -24,7 +24,7 @@ The sample demonstrates how to use an Azure SQL Database with Blazor Server App.
 1. Run next command on the created database
 
    ```sql
-   CREATE TABLE [dbo].[Summary2](
+   CREATE TABLE [dbo].[Summary](
    [Summary] [nvarchar](50) NOT NULL) 
    GO;
    Insert into [dbo].Summary values ('Freezing'),('Bracing'),('Chilly'),('Cool'),('Mild'),('Warm'),('Balmy'),('Hot'),('Sweltering'),('Scorching')
