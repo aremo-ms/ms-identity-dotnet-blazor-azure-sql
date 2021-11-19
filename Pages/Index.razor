@@ -1,7 +1,19 @@
 ﻿@page "/"
 
-<h1>How to connect to Azure SQL from Blazor Server App</h1>
+@using ms_identity_dotnet_blazor_azure_sql.Data
+@inject WeatherForecastService ForecastService
+
+<h1>Hello @_loggedUser</h1>
 
 Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?" />
+
+@code {
+    private string _loggedUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loggedUser = await ForecastService.GetLoggedUser();
+    }    
+}

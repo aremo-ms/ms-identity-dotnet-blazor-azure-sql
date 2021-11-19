@@ -62,5 +62,34 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
 
             return summaryList;
         }
+
+        public async Task<string> GetLoggedUser()
+        {
+            var loggedUser = "N/A";
+
+            using (SqlConnection conn = new(_configuration.GetConnectionString("SqlDbContext")))
+            {
+                if (conn.State == ConnectionState.Closed)
+                    await conn.OpenAsync();
+                try
+                {
+                    SqlCommand cmd = new(@"SELECT [dbo].[UsernamePrintFn]()", conn);
+
+                    loggedUser = (await cmd.ExecuteScalarAsync()).ToString();
+                    
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+                finally
+                {
+                    if (conn.State == ConnectionState.Open)
+                        await conn.CloseAsync();
+                }
+            }
+
+            return loggedUser;
+        }
     }
 }

@@ -28,6 +28,18 @@ The sample demonstrates how to use an Azure SQL Database with Blazor Server App.
    [Summary] [nvarchar](50) NOT NULL) 
    GO;
    Insert into [dbo].Summary values ('Freezing'),('Bracing'),('Chilly'),('Cool'),('Mild'),('Warm'),('Balmy'),('Hot'),('Sweltering'),('Scorching')
+   GO;
+   CREATE FUNCTION [dbo].[UsernamePrintFn]()
+   RETURNS nvarchar(500)
+   AS
+   BEGIN
+       declare @host nvarchar(100), @user nvarchar(100);
+       SELECT @host = HOST_NAME() , @user = SUSER_NAME()
+       declare @result nvarchar(500) = cast(@user + ' at ' + @host as nvarchar(500))
+       -- Return the result of the function
+       return @result
+   END
+   GO
    ```
 
 1. To grant permissions for you App Service on SQL Database, run next 4 commands on your database
@@ -37,6 +49,8 @@ The sample demonstrates how to use an Azure SQL Database with Blazor Server App.
    ALTER ROLE db_datareader ADD MEMBER [<identity-name>];
    ALTER ROLE db_datawriter ADD MEMBER [<identity-name>];
    ALTER ROLE db_ddladmin ADD MEMBER [<identity-name>];
+   GO
+   GRANT EXECUTE TO [<identity-name>]
    GO
    ```
 
