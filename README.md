@@ -62,7 +62,8 @@ The sample demonstrates how to use an Azure SQL Database with Blazor Server App.
 > Don't use same name for App Service as you've used for App registration
 
 1. Make sure Managed Identity is enabled on the App Service ![managed-identity-enabled](./ReadmeFiles/managed-identity-enabled.png)
-1. Open the website
+1. Go to App Service Properties, copy **Virtual IP Address** value and add it to SQL Database **Firewall Settings**.
+1. Run the website
 
 ### Get Data from Azure SQl Server
 
