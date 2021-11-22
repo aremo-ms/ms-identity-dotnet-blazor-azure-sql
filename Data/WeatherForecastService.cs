@@ -1,5 +1,6 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -33,9 +34,12 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
 
         private async Task<IList<string>> GetSummaries()
         {
+
             var summaryList = new List<string>();
             using (SqlConnection conn = new(_configuration.GetConnectionString("SqlDbContext")))
             {
+                conn.AccessToken = await GetAccessToken();
+
                 if (conn.State == ConnectionState.Closed)
                     await conn.OpenAsync();
                 try
@@ -69,6 +73,8 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
 
             using (SqlConnection conn = new(_configuration.GetConnectionString("SqlDbContext")))
             {
+                // conn.AccessToken = await GetAccessToken();
+
                 if (conn.State == ConnectionState.Closed)
                     await conn.OpenAsync();
                 try
@@ -76,7 +82,7 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
                     SqlCommand cmd = new(@"SELECT [dbo].[UsernamePrintFn]()", conn);
 
                     loggedUser = (await cmd.ExecuteScalarAsync()).ToString();
-                    
+
                 }
                 catch (Exception)
                 {
@@ -90,6 +96,48 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
             }
 
             return loggedUser;
+        }
+
+        private async Task<string> GetAccessToken()
+        {
+            var scopes = new string[] { "https://database.windows.net/.default" };
+            var azureSettings = _configuration.GetSection("AzureAd");
+
+            IConfidentialClientApplication app =
+                ConfidentialClientApplicationBuilder.Create(azureSettings["ClientId"])
+                    .WithClientSecret(azureSettings["ClientSecret"])
+                    .WithAuthority(AzureCloudInstance.AzurePublic, azureSettings["TenantId"])
+                    //.WithClientCapabilities(new[] { "cp1" }) // Declare this app to be able to receive CAE events
+                    .Build();
+            //    PublicClientApplicationBuilder
+            //.Create(azureSettings["ClientId"])
+            //.WithAuthority(AzureCloudInstance.AzurePublic, azureSettings["TenantId"])            
+            //.WithDefaultRedirectUri()
+            //.Build();
+
+            string accessToken = string.Empty;
+
+            AuthenticationResult authResult = null;
+            IEnumerable<IAccount> accounts = await app.GetAccountsAsync();
+
+            try
+            {
+                authResult = await app.AcquireTokenSilent(scopes, accounts.FirstOrDefault()).ExecuteAsync();
+                accessToken = authResult.AccessToken;
+            }
+            //catch (MsalUiRequiredException)
+            //{
+            //    authResult = await app.AcquireTokenInteractive(scopes).ExecuteAsync();
+            //    accessToken = authResult.AccessToken;
+            //}
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Authentication error: {ex.Message}");
+            }
+
+            Console.WriteLine($"Access token: {accessToken}\n");
+
+            return accessToken;
         }
     }
 }

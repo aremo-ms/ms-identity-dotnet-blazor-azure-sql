@@ -33,7 +33,10 @@ namespace ms_identity_dotnet_blazor_azure_sql
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"));
+                .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
+                .EnableTokenAcquisitionToCallDownstreamApi()
+                .AddInMemoryTokenCaches();
+
             services.AddControllersWithViews()
                 .AddMicrosoftIdentityUI();
 
