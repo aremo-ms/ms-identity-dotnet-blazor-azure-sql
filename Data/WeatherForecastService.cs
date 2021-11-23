@@ -103,17 +103,18 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
             var scopes = new string[] { "https://database.windows.net/.default" };
             var azureSettings = _configuration.GetSection("AzureAd");
 
-            IConfidentialClientApplication app =
-                ConfidentialClientApplicationBuilder.Create(azureSettings["ClientId"])
-                    .WithClientSecret(azureSettings["ClientSecret"])
-                    .WithAuthority(AzureCloudInstance.AzurePublic, azureSettings["TenantId"])
-                    //.WithClientCapabilities(new[] { "cp1" }) // Declare this app to be able to receive CAE events
-                    .Build();
-            //    PublicClientApplicationBuilder
-            //.Create(azureSettings["ClientId"])
-            //.WithAuthority(AzureCloudInstance.AzurePublic, azureSettings["TenantId"])            
-            //.WithDefaultRedirectUri()
-            //.Build();
+            //IConfidentialClientApplication app =
+            //    ConfidentialClientApplicationBuilder.Create(azureSettings["ClientId"])
+            //        .WithClientSecret(azureSettings["ClientSecret"])
+            //        .WithAuthority(AzureCloudInstance.AzurePublic, azureSettings["TenantId"])
+            //        //.WithClientCapabilities(new[] { "cp1" }) // Declare this app to be able to receive CAE events
+            //        .Build();
+            IPublicClientApplication app =
+                PublicClientApplicationBuilder
+            .Create(azureSettings["ClientId"])
+            .WithAuthority(AzureCloudInstance.AzurePublic, azureSettings["TenantId"])
+            .WithRedirectUri("http://127.0.0.1/")
+            .Build();
 
             string accessToken = string.Empty;
 
@@ -125,11 +126,11 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
                 authResult = await app.AcquireTokenSilent(scopes, accounts.FirstOrDefault()).ExecuteAsync();
                 accessToken = authResult.AccessToken;
             }
-            //catch (MsalUiRequiredException)
-            //{
-            //    authResult = await app.AcquireTokenInteractive(scopes).ExecuteAsync();
-            //    accessToken = authResult.AccessToken;
-            //}
+            catch (MsalUiRequiredException)
+            {
+                authResult = await app.AcquireTokenInteractive(scopes).ExecuteAsync();
+                accessToken = authResult.AccessToken;
+            }
             catch (Exception ex)
             {
                 Console.WriteLine($"Authentication error: {ex.Message}");
