@@ -133,6 +133,7 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
 
         public string GetAccountIdentifier(AuthenticationState authState)
         {
+            //this is Alex's user account id for debugging purposes only
             //return "ae6bdf0d-ba13-4e00-88f8-0fe4f661c86d.979f4440-75dc-4664-b2e1-2cafa0ac67d1";
             return authState.User.Identities.First().Claims.Where(c => c.Type == "uid").First().Value + "." + 
                 authState.User.Identities.First().Claims.Where(c => c.Type == "utid").First().Value;
