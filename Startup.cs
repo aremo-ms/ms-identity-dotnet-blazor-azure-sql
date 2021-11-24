@@ -34,7 +34,7 @@ namespace ms_identity_dotnet_blazor_azure_sql
         {
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
-                .EnableTokenAcquisitionToCallDownstreamApi()
+                .EnableTokenAcquisitionToCallDownstreamApi(new string[] { "https://sql.azuresynapse.usgovcloudapi.net/user_impersonation" })
                 .AddInMemoryTokenCaches();
 
             services.AddControllersWithViews()

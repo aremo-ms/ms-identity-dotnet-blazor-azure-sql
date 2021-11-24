@@ -12,16 +12,18 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
     public class WeatherForecastService
     {
         private IConfiguration _configuration;
+        //private ITokenAcquisition _tokenAquisition;
 
-        public WeatherForecastService(IConfiguration configuration)
+        public WeatherForecastService(IConfiguration configuration)//, ITokenAcquisition tokenAcquisition)
         {
             _configuration = configuration;
+            //_tokenAquisition = tokenAcquisition;
         }
 
-        public async Task<WeatherForecast[]> GetForecastAsync(DateTime startDate)
+        public async Task<WeatherForecast[]> GetForecastAsync(DateTime startDate, string userName)
         {
             //database call
-            var dbSummaries = await GetSummaries();
+            var dbSummaries = await GetSummaries(userName);
 
             var rnd = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
@@ -32,13 +34,12 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
             }).ToArray();
         }
 
-        private async Task<IList<string>> GetSummaries()
+        private async Task<IList<string>> GetSummaries(string userName)
         {
-
             var summaryList = new List<string>();
             using (SqlConnection conn = new(_configuration.GetConnectionString("SqlDbContext")))
             {
-                conn.AccessToken = await GetAccessToken();
+                conn.AccessToken = await GetAccessToken(userName);
 
                 if (conn.State == ConnectionState.Closed)
                     await conn.OpenAsync();
@@ -98,38 +99,41 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
             return loggedUser;
         }
 
-        private async Task<string> GetAccessToken()
+        private async Task<string> GetAccessToken(string userName)
         {
             var scopes = new string[] { "https://database.windows.net/.default" };
             var azureSettings = _configuration.GetSection("AzureAd");
 
-            //IConfidentialClientApplication app =
-            //    ConfidentialClientApplicationBuilder.Create(azureSettings["ClientId"])
-            //        .WithClientSecret(azureSettings["ClientSecret"])
-            //        .WithAuthority(AzureCloudInstance.AzurePublic, azureSettings["TenantId"])
-            //        //.WithClientCapabilities(new[] { "cp1" }) // Declare this app to be able to receive CAE events
-            //        .Build();
-            IPublicClientApplication app =
-                PublicClientApplicationBuilder
-            .Create(azureSettings["ClientId"])
-            .WithAuthority(AzureCloudInstance.AzurePublic, azureSettings["TenantId"])
-            .WithRedirectUri("http://127.0.0.1/")
-            .Build();
+            IConfidentialClientApplication app =
+                ConfidentialClientApplicationBuilder.Create(azureSettings["ClientId"])
+                    .WithRedirectUri("https://localhost:44348/")
+                    .WithClientSecret(azureSettings["ClientSecret"])
+                    .WithAuthority(AzureCloudInstance.AzurePublic, azureSettings["TenantId"])
+                    //.WithClientCapabilities(new[] { "cp1" }) // Declare this app to be able to receive CAE events
+                    .Build();
+            //IPublicClientApplication app =
+            //    PublicClientApplicationBuilder
+            //.Create(azureSettings["ClientId"])
+            //.WithAuthority(AzureCloudInstance.AzurePublic, azureSettings["TenantId"])
+            //.WithRedirectUri("http://localhost")
+            //.Build();
 
             string accessToken = string.Empty;
-
+            var temp = app.UserTokenCache;
             AuthenticationResult authResult = null;
-            IEnumerable<IAccount> accounts = await app.GetAccountsAsync();
+            IAccount account = (await app.GetAccountsAsync()).FirstOrDefault();//ClaimsPrincipal.Current.GetMsalAccountId());
 
             try
             {
-                authResult = await app.AcquireTokenSilent(scopes, accounts.FirstOrDefault()).ExecuteAsync();
+                //accessToken = await tokenAcquisition.GetAccessTokenForUserAsync(scopes);
+
+                authResult = await app.AcquireTokenSilent(scopes, account).ExecuteAsync();
                 accessToken = authResult.AccessToken;
             }
             catch (MsalUiRequiredException)
             {
-                authResult = await app.AcquireTokenInteractive(scopes).ExecuteAsync();
-                accessToken = authResult.AccessToken;
+                //authResult = await app.AcquireTokenInteractive(scopes).ExecuteAsync();
+                //accessToken = authResult.AccessToken;
             }
             catch (Exception ex)
             {
