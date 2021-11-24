@@ -3,7 +3,6 @@
 @using ms_identity_dotnet_blazor_azure_sql.Data
 @inject WeatherForecastService ForecastService
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
-@inject IAccessTokenProvider AccessToken
 
 <h1>Weather forecast</h1>
 
@@ -44,8 +43,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
-        var user = authstate.User;
-        var name = user.Identity.Name;
-        forecasts = await ForecastService.GetForecastAsync(DateTime.Now, name);
+        
+        forecasts = await ForecastService.GetForecastAsync(DateTime.Now, ForecastService.GetAccountIdentifier(authstate));
     }
 }

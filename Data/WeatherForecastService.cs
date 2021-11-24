@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Client;
+using Microsoft.Identity.Web;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -12,12 +14,10 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
     public class WeatherForecastService
     {
         private IConfiguration _configuration;
-        //private ITokenAcquisition _tokenAquisition;
 
-        public WeatherForecastService(IConfiguration configuration)//, ITokenAcquisition tokenAcquisition)
+        public WeatherForecastService(IConfiguration configuration)
         {
             _configuration = configuration;
-            //_tokenAquisition = tokenAcquisition;
         }
 
         public async Task<WeatherForecast[]> GetForecastAsync(DateTime startDate, string userName)
@@ -34,12 +34,12 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
             }).ToArray();
         }
 
-        private async Task<IList<string>> GetSummaries(string userName)
+        private async Task<IList<string>> GetSummaries(string accountIdentifier)
         {
             var summaryList = new List<string>();
             using (SqlConnection conn = new(_configuration.GetConnectionString("SqlDbContext")))
             {
-                conn.AccessToken = await GetAccessToken(userName);
+                conn.AccessToken = await GetAccessToken(accountIdentifier);
 
                 if (conn.State == ConnectionState.Closed)
                     await conn.OpenAsync();
@@ -68,13 +68,13 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
             return summaryList;
         }
 
-        public async Task<string> GetLoggedUser()
+        public async Task<string> GetDatabaseLoggedUser(string accountIdentifier)
         {
             var loggedUser = "N/A";
 
             using (SqlConnection conn = new(_configuration.GetConnectionString("SqlDbContext")))
             {
-                // conn.AccessToken = await GetAccessToken();
+                conn.AccessToken = await GetAccessToken(accountIdentifier);
 
                 if (conn.State == ConnectionState.Closed)
                     await conn.OpenAsync();
@@ -99,41 +99,27 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
             return loggedUser;
         }
 
-        private async Task<string> GetAccessToken(string userName)
+        private async Task<string> GetAccessToken(string accountIdentifier)
         {
             var scopes = new string[] { "https://database.windows.net/.default" };
             var azureSettings = _configuration.GetSection("AzureAd");
 
             IConfidentialClientApplication app =
                 ConfidentialClientApplicationBuilder.Create(azureSettings["ClientId"])
-                    .WithRedirectUri("https://localhost:44348/")
                     .WithClientSecret(azureSettings["ClientSecret"])
                     .WithAuthority(AzureCloudInstance.AzurePublic, azureSettings["TenantId"])
-                    //.WithClientCapabilities(new[] { "cp1" }) // Declare this app to be able to receive CAE events
+                    .WithCacheOptions(CacheOptions.EnableSharedCacheOptions)                    
                     .Build();
-            //IPublicClientApplication app =
-            //    PublicClientApplicationBuilder
-            //.Create(azureSettings["ClientId"])
-            //.WithAuthority(AzureCloudInstance.AzurePublic, azureSettings["TenantId"])
-            //.WithRedirectUri("http://localhost")
-            //.Build();
 
             string accessToken = string.Empty;
             var temp = app.UserTokenCache;
             AuthenticationResult authResult = null;
-            IAccount account = (await app.GetAccountsAsync()).FirstOrDefault();//ClaimsPrincipal.Current.GetMsalAccountId());
+            IAccount account = await app.GetAccountAsync(accountIdentifier);
 
             try
             {
-                //accessToken = await tokenAcquisition.GetAccessTokenForUserAsync(scopes);
-
                 authResult = await app.AcquireTokenSilent(scopes, account).ExecuteAsync();
                 accessToken = authResult.AccessToken;
-            }
-            catch (MsalUiRequiredException)
-            {
-                //authResult = await app.AcquireTokenInteractive(scopes).ExecuteAsync();
-                //accessToken = authResult.AccessToken;
             }
             catch (Exception ex)
             {
@@ -143,6 +129,13 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
             Console.WriteLine($"Access token: {accessToken}\n");
 
             return accessToken;
+        }
+
+        public string GetAccountIdentifier(AuthenticationState authState)
+        {
+            //return "ae6bdf0d-ba13-4e00-88f8-0fe4f661c86d.979f4440-75dc-4664-b2e1-2cafa0ac67d1";
+            return authState.User.Identities.First().Claims.Where(c => c.Type == "uid").First().Value + "." + 
+                authState.User.Identities.First().Claims.Where(c => c.Type == "utid").First().Value;
         }
     }
 }

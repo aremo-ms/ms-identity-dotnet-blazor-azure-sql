@@ -42,19 +42,13 @@ The sample demonstrates how to use an Azure SQL Database with Blazor Server App.
    GO
    ```
 
-1. To grant permissions for you App Service on SQL Database, run next 4 commands on your database
+1. Create a user from your Tenant inside the database and grant EXECUTE permission
 
    ```sql
-   CREATE USER [<identity-name>] FROM EXTERNAL PROVIDER;
-   ALTER ROLE db_datareader ADD MEMBER [<identity-name>];
-   ALTER ROLE db_datawriter ADD MEMBER [<identity-name>];
-   ALTER ROLE db_ddladmin ADD MEMBER [<identity-name>];
-   GO
-   GRANT EXECUTE TO [<identity-name>]
-   GO
+   CREATE USER [tenant_user_name (like alexbeyd@kkaad.onmicrosof.com)] FROM EXTERNAL PROVIDER; 
+   EXECUTE sp_addrolemember db_datareader, [tenant_user_name (like alexbeyd@kkaad.onmicrosof.com)];
+   grant execute to [tenant_user_name (like alexbeyd@kkaad.onmicrosof.com)]
    ```
-
-   Where identity-name is usually name of your App Service.
 
 1. Add next lines to [appsettings.json](https://github.com/aremo-ms/ms-identity-dotnet-blazor-azure-sql/blob/master/appsettings.json)
 
