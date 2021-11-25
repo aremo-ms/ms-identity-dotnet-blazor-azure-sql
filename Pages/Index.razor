@@ -6,7 +6,7 @@
 
 
 <h1>Blazor with SQL Server</h1>
-<h4>The user logged into SQL Database is <strong>@_loggedUser</strong></h4>
+<h4><strong>@_greetingsMessage</strong></h4>
 
 Welcome to your new app.
 
@@ -14,10 +14,19 @@ Welcome to your new app.
 
 @code {
     private string _loggedUser;
+    private string _greetingsMessage;
 
     protected override async Task OnInitializedAsync()
     {
         var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
-        _loggedUser = await ForecastService.GetDatabaseLoggedUser(ForecastService.GetAccountIdentifier(authstate));
-    }    
+        if (authstate.User.Identity.IsAuthenticated)
+        {
+            _loggedUser = await ForecastService.GetDatabaseLoggedUser(ForecastService.GetAccountIdentifier(authstate));
+
+            if (_loggedUser == "N/A")
+                _greetingsMessage = "Please Log Out of the current user and re-login.";
+            else
+                _greetingsMessage = $"The user logged into SQL Database is {_loggedUser}";
+        }            
+    }
 }

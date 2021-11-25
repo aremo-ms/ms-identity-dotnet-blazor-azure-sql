@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Client;
-using Microsoft.Identity.Web;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -37,7 +36,7 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
         private async Task<IList<string>> GetSummaries(string accountIdentifier)
         {
             var summaryList = new List<string>();
-            using (SqlConnection conn = new(_configuration.GetConnectionString("SqlDbContext")))
+            using (SqlConnection conn = GetSqlConnection())
             {
                 conn.AccessToken = await GetAccessToken(accountIdentifier);
 
@@ -72,9 +71,12 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
         {
             var loggedUser = "N/A";
 
-            using (SqlConnection conn = new(_configuration.GetConnectionString("SqlDbContext")))
+            using (SqlConnection conn = GetSqlConnection())
             {
-                conn.AccessToken = await GetAccessToken(accountIdentifier);
+                var token = await GetAccessToken(accountIdentifier);
+                if (string.IsNullOrEmpty(token)) return loggedUser;
+
+                conn.AccessToken = token;
 
                 if (conn.State == ConnectionState.Closed)
                     await conn.OpenAsync();
@@ -108,25 +110,27 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
                 ConfidentialClientApplicationBuilder.Create(azureSettings["ClientId"])
                     .WithClientSecret(azureSettings["ClientSecret"])
                     .WithAuthority(AzureCloudInstance.AzurePublic, azureSettings["TenantId"])
-                    .WithCacheOptions(CacheOptions.EnableSharedCacheOptions)                    
+                    .WithCacheOptions(CacheOptions.EnableSharedCacheOptions)
                     .Build();
 
             string accessToken = string.Empty;
-            var temp = app.UserTokenCache;
-            AuthenticationResult authResult = null;
+
             IAccount account = await app.GetAccountAsync(accountIdentifier);
 
-            try
+            if (account != null)
             {
-                authResult = await app.AcquireTokenSilent(scopes, account).ExecuteAsync();
-                accessToken = authResult.AccessToken;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Authentication error: {ex.Message}");
-            }
+                try
+                {
+                    AuthenticationResult authResult = await app.AcquireTokenSilent(scopes, account).ExecuteAsync();
+                    accessToken = authResult.AccessToken;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Authentication error: {ex.Message}");
+                }
 
-            Console.WriteLine($"Access token: {accessToken}\n");
+                Console.WriteLine($"Access token: {accessToken}\n");
+            }
 
             return accessToken;
         }
@@ -135,8 +139,13 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
         {
             //this is Alex's user account id for debugging purposes only
             //return "ae6bdf0d-ba13-4e00-88f8-0fe4f661c86d.979f4440-75dc-4664-b2e1-2cafa0ac67d1";
-            return authState.User.Identities.First().Claims.Where(c => c.Type == "uid").First().Value + "." + 
+            return authState.User.Identities.First().Claims.Where(c => c.Type == "uid").First().Value + "." +
                 authState.User.Identities.First().Claims.Where(c => c.Type == "utid").First().Value;
+        }
+
+        private SqlConnection GetSqlConnection(string connStringName = "SqlDbContext")
+        {
+            return new(_configuration.GetConnectionString(connStringName));
         }
     }
 }
