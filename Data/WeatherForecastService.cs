@@ -103,7 +103,6 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
 
         private async Task<string> GetAccessToken(string accountIdentifier)
         {
-            var scopes = new string[] { "https://database.windows.net/.default" };
             var azureSettings = _configuration.GetSection("AzureAd");
 
             IConfidentialClientApplication app =
@@ -121,7 +120,8 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
             {
                 try
                 {
-                    AuthenticationResult authResult = await app.AcquireTokenSilent(scopes, account).ExecuteAsync();
+                    AuthenticationResult authResult = await app.AcquireTokenSilent(
+                        new string[] { azureSettings["Scopes"] }, account).ExecuteAsync();
                     accessToken = authResult.AccessToken;
                 }
                 catch (Exception ex)
