@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
+using ms_identity_dotnet_blazor_azure_sql.AAD;
 using ms_identity_dotnet_blazor_azure_sql.Data;
 
 namespace ms_identity_dotnet_blazor_azure_sql
@@ -40,7 +41,10 @@ namespace ms_identity_dotnet_blazor_azure_sql
             services.AddRazorPages();
             services.AddServerSideBlazor()
                 .AddMicrosoftIdentityConsentHandler();
-            services.AddSingleton<WeatherForecastService>();
+
+            services
+                .AddSingleton<WeatherForecastService>()
+                .AddSingleton<UserTokenService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

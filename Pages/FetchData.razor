@@ -1,12 +1,14 @@
 ﻿@page "/fetchdata"
 
+@using ms_identity_dotnet_blazor_azure_sql.AAD
 @using ms_identity_dotnet_blazor_azure_sql.Data
 @inject WeatherForecastService ForecastService
+@inject UserTokenService UserTokenService
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 
 <h1>Weather forecast</h1>
 
-<p>This component demonstrates fetching data from a service.</p>
+<p>This component demonstrates fetching data from a service that is connected to SQL database.</p>
 
 @if (forecasts == null)
 {
@@ -44,6 +46,6 @@ else
     {
         var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         
-        forecasts = await ForecastService.GetForecastAsync(DateTime.Now, ForecastService.GetAccountIdentifier(authstate));
+        forecasts = await ForecastService.GetForecastAsync(DateTime.Now, UserTokenService.GetAccountIdentifier(authstate));
     }
 }
