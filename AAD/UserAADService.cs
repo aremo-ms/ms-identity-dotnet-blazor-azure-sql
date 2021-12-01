@@ -17,7 +17,7 @@ namespace ms_identity_dotnet_blazor_azure_sql.AAD
         private readonly IConfidentialClientApplication _app;
         private readonly IConfigurationSection _azureSettings;
         private readonly SqlDatabase _database;
-        MicrosoftIdentityConsentAndConditionalAccessHandler _consentHandler;
+        readonly MicrosoftIdentityConsentAndConditionalAccessHandler _consentHandler;
 
         public UserAADService(IConfiguration configuration, SqlDatabase database, MicrosoftIdentityConsentAndConditionalAccessHandler consentHandler)
         {
@@ -63,8 +63,6 @@ namespace ms_identity_dotnet_blazor_azure_sql.AAD
         public async Task<string> GetDatabaseLoggedUser(AuthenticationState authState)
         {
             var loggedUser = "N/A";
-
-            var accountIdentifier = GetAccountIdentifier(authState);
 
             using (SqlConnection conn = _database.GetSqlConnection())
             {
