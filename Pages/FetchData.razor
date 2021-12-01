@@ -3,7 +3,7 @@
 @using ms_identity_dotnet_blazor_azure_sql.AAD
 @using ms_identity_dotnet_blazor_azure_sql.Data
 @inject WeatherForecastService ForecastService
-@inject UserTokenService UserTokenService
+@inject UserAADService UserAADService
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 
 <h1>Weather forecast</h1>
@@ -46,6 +46,6 @@ else
     {
         var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         
-        forecasts = await ForecastService.GetForecastAsync(DateTime.Now, UserTokenService.GetAccountIdentifier(authstate));
+        forecasts = await ForecastService.GetForecastAsync(DateTime.Now, authstate);
     }
 }

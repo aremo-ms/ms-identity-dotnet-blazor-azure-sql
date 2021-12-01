@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Identity.Client;
 using ms_identity_dotnet_blazor_azure_sql.AAD;
+using ms_identity_dotnet_blazor_azure_sql.Database;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -13,19 +13,21 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
 {
     public class WeatherForecastService
     {
-        private IConfiguration _configuration;
-        private UserTokenService _userToken;
+        private readonly IConfiguration _configuration;
+        private readonly UserAADService _userAAD;
+        private readonly SqlDatabase _database;
 
-        public WeatherForecastService(IConfiguration configuration, UserTokenService userToken)
+        public WeatherForecastService(IConfiguration configuration, UserAADService userAAD, SqlDatabase database)
         {
             _configuration = configuration;
-            _userToken = userToken;
+            _userAAD = userAAD;
+            _database = database;
         }
 
-        public async Task<WeatherForecast[]> GetForecastAsync(DateTime startDate, string userName)
+        public async Task<WeatherForecast[]> GetForecastAsync(DateTime startDate, AuthenticationState authState)
         {
             //database call
-            var dbSummaries = await GetSummaries(userName);
+            var dbSummaries = await GetSummaries(authState);
 
             var rnd = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
@@ -36,12 +38,12 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
             }).ToArray();
         }
 
-        private async Task<IList<string>> GetSummaries(string accountIdentifier)
+        private async Task<IList<string>> GetSummaries(AuthenticationState authState)
         {
             var summaryList = new List<string>();
-            using (SqlConnection conn = GetSqlConnection())
+            using (SqlConnection conn = _database.GetSqlConnection())
             {
-                conn.AccessToken = await _userToken.GetAccessToken(accountIdentifier);
+                conn.AccessToken = await _userAAD.GetAccessToken(authState);
 
                 if (conn.State == ConnectionState.Closed)
                     await conn.OpenAsync();
@@ -68,45 +70,6 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
             }
 
             return summaryList;
-        }
-
-        public async Task<string> GetDatabaseLoggedUser(string accountIdentifier)
-        {
-            var loggedUser = "N/A";
-
-            using (SqlConnection conn = GetSqlConnection())
-            {
-                var token = await _userToken.GetAccessToken(accountIdentifier);
-                if (string.IsNullOrEmpty(token)) return loggedUser;
-
-                conn.AccessToken = token;
-
-                if (conn.State == ConnectionState.Closed)
-                    await conn.OpenAsync();
-                try
-                {
-                    SqlCommand cmd = new(@"SELECT [dbo].[UsernamePrintFn]()", conn);
-
-                    loggedUser = (await cmd.ExecuteScalarAsync()).ToString();
-
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-                finally
-                {
-                    if (conn.State == ConnectionState.Open)
-                        await conn.CloseAsync();
-                }
-            }
-
-            return loggedUser;
-        }
-
-        private SqlConnection GetSqlConnection(string connStringName = "SqlDbContext")
-        {
-            return new(_configuration.GetConnectionString(connStringName));
         }
     }
 }

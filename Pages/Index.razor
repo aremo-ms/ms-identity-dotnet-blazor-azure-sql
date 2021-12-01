@@ -3,7 +3,7 @@
 @using ms_identity_dotnet_blazor_azure_sql.AAD
 @using ms_identity_dotnet_blazor_azure_sql.Data
 @inject WeatherForecastService ForecastService
-@inject UserTokenService UserTokenService
+@inject UserAADService UserAADService
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 
 
@@ -23,7 +23,7 @@ Welcome to your new app.
         var authstate = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         if (authstate.User.Identity.IsAuthenticated)
         {
-            _loggedUser = await ForecastService.GetDatabaseLoggedUser(UserTokenService.GetAccountIdentifier(authstate));
+            _loggedUser = await UserAADService.GetDatabaseLoggedUser(authstate);
 
             if (_loggedUser == "N/A")
                 _greetingsMessage = "Please Log Out of the current user and re-login.";

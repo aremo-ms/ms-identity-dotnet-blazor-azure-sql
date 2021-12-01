@@ -8,6 +8,7 @@ using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 using ms_identity_dotnet_blazor_azure_sql.AAD;
 using ms_identity_dotnet_blazor_azure_sql.Data;
+using ms_identity_dotnet_blazor_azure_sql.Database;
 
 namespace ms_identity_dotnet_blazor_azure_sql
 {
@@ -42,9 +43,12 @@ namespace ms_identity_dotnet_blazor_azure_sql
             services.AddServerSideBlazor()
                 .AddMicrosoftIdentityConsentHandler();
 
+            //services.AddSignalR().AddAzureSignalR();
+
             services
-                .AddSingleton<WeatherForecastService>()
-                .AddSingleton<UserTokenService>();
+                .AddScoped<WeatherForecastService>()
+                .AddScoped<UserAADService>()
+                .AddScoped<SqlDatabase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
