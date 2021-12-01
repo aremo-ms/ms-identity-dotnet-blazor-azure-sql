@@ -43,12 +43,23 @@ namespace ms_identity_dotnet_blazor_azure_sql
             services.AddServerSideBlazor()
                 .AddMicrosoftIdentityConsentHandler();
 
-            //services.AddSignalR().AddAzureSignalR();
-
             services
                 .AddScoped<WeatherForecastService>()
                 .AddScoped<UserAADService>()
                 .AddSingleton<SqlDatabase>();
+
+            services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
+            {
+                options.Events.OnRedirectToIdentityProviderForSignOut = async context =>
+                {
+                    await System.Threading.Tasks.Task.Run(() =>
+                    {
+                        context.HttpContext.Response.Redirect("https://localhost:44348"); //TODO: make it configured from SignedOutRedirectUri setting
+                        context.HandleResponse();
+                    });
+                };
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
