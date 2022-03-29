@@ -33,11 +33,13 @@ namespace ms_identity_dotnet_blazor_azure_sql
             services.AddControllersWithViews()
                 .AddMicrosoftIdentityUI();
 
-            services.AddAuthorization(options =>
-            {
-                // By default, all incoming requests will be authorized according to the default policy
-                options.FallbackPolicy = options.DefaultPolicy;
-            });
+            //uncomment this part in case when Index page should proceed to authorization UI immediately after the application starts
+            //with the below lines enabled there will be impossible to be "Not logged in" becuase it will re-login automatically
+            //services.AddAuthorization(options =>
+            //{
+            //    // By default, all incoming requests will be authorized according to the default policy
+            //    options.FallbackPolicy = options.DefaultPolicy;
+            //});
 
             services.AddRazorPages();
             services.AddServerSideBlazor()
@@ -59,7 +61,6 @@ namespace ms_identity_dotnet_blazor_azure_sql
                     });
                 };
             });
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

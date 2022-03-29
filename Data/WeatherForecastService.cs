@@ -13,13 +13,11 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
 {
     public class WeatherForecastService
     {
-        private readonly IConfiguration _configuration;
         private readonly UserAADService _userAAD;
         private readonly SqlDatabase _database;
 
-        public WeatherForecastService(IConfiguration configuration, UserAADService userAAD, SqlDatabase database)
+        public WeatherForecastService(UserAADService userAAD, SqlDatabase database)
         {
-            _configuration = configuration;
             _userAAD = userAAD;
             _database = database;
         }

@@ -40,15 +40,14 @@ namespace ms_identity_dotnet_blazor_azure_sql.AAD
         public async Task<string> GetAccessToken(AuthenticationState authState)
         {
             string accessToken = string.Empty;
-
-            var accountIdentifier = GetAccountIdentifier(authState);
-
             var scopes = new string[] { _azureSettings["Scopes"] };
-
-            IAccount account = await _app.GetAccountAsync(accountIdentifier);
 
             try
             {
+                var accountIdentifier = GetAccountIdentifier(authState);
+
+                IAccount account = await _app.GetAccountAsync(accountIdentifier);
+
                 AuthenticationResult authResult = await _app.AcquireTokenSilent(scopes, account).ExecuteAsync();
                 accessToken = authResult.AccessToken;
             }

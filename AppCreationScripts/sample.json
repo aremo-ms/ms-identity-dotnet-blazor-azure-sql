@@ -26,7 +26,7 @@
   "ReadmeSetup": {
     "FreeText": "\n> For Visual Studio users\n>\n> Clean the solution, rebuild the solution, and run it.\n\n For command line run the next commands:\n",
     "UseNewSetup": "1", /* when set to 0, only legacy setup will be used */
-    "CertificateOption":  "0" /* 1 when a certificate can be used instead of secret*/
+    "CertificateOption": "0" /* 1 when a certificate can be used instead of secret*/
   },
 
   /* It either can be a text or link to another readme file */
@@ -78,11 +78,7 @@
           "DelegatedPermissions": [ "access_as_user" ]
         }
       ],
-      "ManualSteps": [
-        {
-          "Comment": "You can run the ..\\CreateUsersAndAssignRoles.ps1 command to automatically create a number of users, and assign users to these roles or assign users to this application app roles using the portal.To receive the `roles` claim with the name of the app roles this user is assigned to, make sure that the user accounts you plan to sign-in to this app is assigned to the app roles of this app. The guide, https://docs.microsoft.com/azure/active-directory/manage-apps/assign-user-or-group-access-portal#assign-a-user-to-an-app---portal provides step by step instructions."
-        }
-      ],
+      "ManualSteps": [],
       "Sample": {
         "SampleSubPath": "",
         "ProjectDirectory": ""
