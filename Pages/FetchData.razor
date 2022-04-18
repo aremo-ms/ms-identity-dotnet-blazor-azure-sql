@@ -54,8 +54,10 @@ else
         if (_loggedUser == "N/A")
             _greetingsMessage = "Please Log Out of the current user and re-login.";
         else
+        {
             _greetingsMessage = $"The user logged into SQL Database is {_loggedUser}";
-        
-        forecasts = await ForecastService.GetForecastAsync(DateTime.Now, authstate);
+
+            forecasts = await ForecastService.GetForecastAsync(DateTime.Now, authstate);
+        }
     }
 }

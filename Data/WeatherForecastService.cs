@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using ms_identity_dotnet_blazor_azure_sql.AAD;
 using ms_identity_dotnet_blazor_azure_sql.Database;
 using System;
@@ -42,11 +43,13 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
             using (SqlConnection conn = _database.GetSqlConnection())
             {
                 conn.AccessToken = await _userAAD.GetAccessToken(authState);
+                if (conn.AccessToken.IsNullOrEmpty()) return summaryList;
 
-                if (conn.State == ConnectionState.Closed)
-                    await conn.OpenAsync();
                 try
                 {
+                    if (conn.State == ConnectionState.Closed)
+                    await conn.OpenAsync();
+                    
                     SqlCommand cmd = new(@"select * from Summary", conn);
 
                     var myReader = await cmd.ExecuteReaderAsync();
@@ -58,7 +61,7 @@ namespace ms_identity_dotnet_blazor_azure_sql.Data
                 }
                 catch (Exception)
                 {
-                    throw;
+                    return summaryList;
                 }
                 finally
                 {

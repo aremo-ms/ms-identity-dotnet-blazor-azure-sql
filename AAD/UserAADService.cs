@@ -54,6 +54,7 @@ namespace ms_identity_dotnet_blazor_azure_sql.AAD
             catch (Exception)
             {
                 _consentHandler.ChallengeUser(scopes);
+                return accessToken;
             }
 
             return accessToken;
@@ -65,15 +66,17 @@ namespace ms_identity_dotnet_blazor_azure_sql.AAD
 
             using (SqlConnection conn = _database.GetSqlConnection())
             {
-                var token = await GetAccessToken(authState);
-                if (string.IsNullOrEmpty(token)) return loggedUser;
-
-                conn.AccessToken = token;
-
-                if (conn.State == ConnectionState.Closed)
-                    await conn.OpenAsync();
                 try
                 {
+                    var token = await GetAccessToken(authState);
+
+                    if (string.IsNullOrEmpty(token)) return loggedUser;
+
+                    conn.AccessToken = token;
+
+                    if (conn.State == ConnectionState.Closed)
+                        await conn.OpenAsync();
+
                     SqlCommand cmd = new(@"SELECT [dbo].[UsernamePrintFn]()", conn);
 
                     loggedUser = (await cmd.ExecuteScalarAsync()).ToString();
@@ -81,7 +84,7 @@ namespace ms_identity_dotnet_blazor_azure_sql.AAD
                 }
                 catch (Exception)
                 {
-                    throw;
+                    return loggedUser;
                 }
                 finally
                 {
@@ -95,6 +98,11 @@ namespace ms_identity_dotnet_blazor_azure_sql.AAD
 
         private string GetAccountIdentifier(AuthenticationState authState)
         {
+            if (authState.User.Identities.First().Claims.Where(c => c.Type == "uid").Count() == 0 ||
+                authState.User.Identities.First().Claims.Where(c => c.Type == "utid").Count() == 0)
+            {
+                return null;
+            }
             //return "<user object id>.<tenant id>" which is account identifier;
             return authState.User.Identities.First().Claims.Where(c => c.Type == "uid").First().Value + "." +
                 authState.User.Identities.First().Claims.Where(c => c.Type == "utid").First().Value;
