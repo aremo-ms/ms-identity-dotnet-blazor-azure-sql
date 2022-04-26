@@ -50,17 +50,20 @@ namespace ms_identity_dotnet_blazor_azure_sql
                 .AddScoped<UserAADService>()
                 .AddSingleton<SqlDatabase>();
 
+            //Intercepts logout process and redirects to designated URI
             services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
-                options.Events.OnRedirectToIdentityProviderForSignOut = async context =>
+                options.Events.OnSignedOutCallbackRedirect = async context =>
                 {
                     await System.Threading.Tasks.Task.Run(() =>
                     {
-                        context.HttpContext.Response.Redirect("https://localhost:44348"); //TODO: make it configured from SignedOutRedirectUri setting
+                        context.HttpContext.Response.Redirect(Configuration.GetSection("AzureAd:OnSignOutRedirectPage").Value); //TODO: make it configured from SignedOutRedirectUri setting
                         context.HandleResponse();
                     });
                 };
             });
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
