@@ -2,10 +2,13 @@
   "Sample": {
     "Author": "v-abeyderman",
     "Title": "How to use an authenticated user's credentials for log-in to an Azure SQL Database from Blazor Web Server App",
-    "Level": 200,
+    "Level": 300,
     "Client": "Blazor Server App",
     "RepositoryUrl": "ms-identity-dotnet-blazor-azure-sql",
-    "Endpoint": "AAD v2.0"
+    "Endpoint": "AAD v2.0",
+    "Description": "This sample demonstrates how to use access token obtained from AAD for connecting to Azure SQL Server database as a user that is logged in into the application.",
+    "Languages": [ "csharp", "t-sql" ],
+    "Products": [ "aspnet-core", "blazor", "azure-active-directory", "azure-sql" ]
   },
 
   /*
@@ -24,9 +27,13 @@
   },
 
   "ReadmeSetup": {
-    "FreeText": "\n> For Visual Studio users\n>\n> Clean the solution, rebuild the solution, and run it.\n\n For command line run the next commands:\n",
+    "FreeText": "",
+    "IncludeFilePath": "",
     "UseNewSetup": "1", /* when set to 0, only legacy setup will be used */
-    "CertificateOption": "0" /* 1 when a certificate can be used instead of secret*/
+    "CertificateOption": "1", /* 1 when a certificate can be used instead of secret*/
+    "CreateProjectIncludeFilePath": "",
+    "AppRegistrationIncludeFilePath": "",
+    "RunSampleIncludeFilePath": ""
   },
 
   /* It either can be a text or link to another readme file */
@@ -72,12 +79,6 @@
       "ReplyUrls": "https://localhost:44348/, https://localhost:44348/signin-oidc",
       "LogoutUrl": "https://localhost:44348/signout-oidc",
       "PasswordCredentials": "Auto",
-      "RequiredResourcesAccess": [
-        {
-          "Resource": "service",
-          "DelegatedPermissions": [ "access_as_user" ]
-        }
-      ],
       "ManualSteps": [],
       "Sample": {
         "SampleSubPath": "",
