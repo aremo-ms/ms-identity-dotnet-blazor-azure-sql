@@ -6,12 +6,6 @@ param(
     [string] $azureEnvironmentName
 )
 
-if ($null -eq (Get-Module -ListAvailable -Name "Microsoft.Graph.Applications")) { 
-    Install-Module "Microsoft.Graph.Applications" -Scope CurrentUser                                            
-} 
-Import-Module Microsoft.Graph.Applications
-$ErrorActionPreference = "Stop"
-
 Function Cleanup
 {
     if (!$azureEnvironmentName)
@@ -28,9 +22,10 @@ Function Cleanup
     # into which you want to create the apps. Look it up in the Azure portal in the "Properties" of the Azure AD. 
 
     # Connect to the Microsoft Graph API
-    Write-Host "Connecting Microsoft Graph"
+    Write-Host "Connecting to Microsoft Graph"
     if ($tenantId -eq "") {
         Connect-MgGraph -Scopes "Application.ReadWrite.All" -Environment $azureEnvironmentName
+        $tenantId = (Get-MgContext).TenantId
     }
     else {
         Connect-MgGraph -TenantId $tenantId -Scopes "Application.ReadWrite.All" -Environment $azureEnvironmentName
@@ -46,7 +41,7 @@ Function Cleanup
     }
     catch
     {
-	    Write-Host "Unable to remove the 'ClientApp-blazor-azuresql' . Try deleting manually." -ForegroundColor White -BackgroundColor Red
+	    Write-Host "Unable to remove the application 'ClientApp-blazor-azuresql' . Try deleting manually." -ForegroundColor White -BackgroundColor Red
     }
 
     Write-Host "Making sure there are no more (ClientApp-blazor-azuresql) applications found, will remove if needed..."
@@ -74,5 +69,15 @@ Function Cleanup
     }
 }
 
+if ($null -eq (Get-Module -ListAvailable -Name "Microsoft.Graph.Applications")) { 
+    Install-Module "Microsoft.Graph.Applications" -Scope CurrentUser                                            
+} 
+Import-Module Microsoft.Graph.Applications
+$ErrorActionPreference = "Stop"
+
+
 Cleanup -tenantId $tenantId -environment $azureEnvironmentName
+
+Write-Host "Disconnecting from tenant"
+Disconnect-MgGraph
 

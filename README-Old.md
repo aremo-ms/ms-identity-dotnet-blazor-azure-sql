@@ -10,8 +10,9 @@ The sample demonstrates how to use an Azure SQL Database with Blazor Server App.
 ## Pre-Requirements
 
 1. Visual Studio.
-1. Azure Subscription and Tenant with at least one user created in it.
+1. Azure Active Directory and Tenant with at least one user created in it.
 1. All users that are using the application should be part of the Tenant
+1. SQL Database Database is setup on local machine or deployed on Azure.
 
 ## How to use the sample
 
@@ -20,8 +21,9 @@ The sample demonstrates how to use an Azure SQL Database with Blazor Server App.
 
 ### Setup SQL Database and grant user permissions for managed identity
 
-1. Create Azure SQL database instance and add your Tenant user as Admin
-1. Run next command on the created database
+1. Create Azure SQL database instance and add your Tenant user as Admin or [install local SQL server](https://www.microsoft.com/sql-server/sql-server-downloads) (Express edition is enough) and [SQL Server Management Studio](https://docs.microsoft.com/sql/ssms/download-sql-server-management-studio-ssms)
+2. [Create](https://docs.microsoft.com/sql/relational-databases/databases/create-a-database) an empty Database
+3. On the created database run next commands
 
    ```sql
    CREATE TABLE [dbo].[Summary](
@@ -42,7 +44,7 @@ The sample demonstrates how to use an Azure SQL Database with Blazor Server App.
    GO
    ```
 
-1. Create a user from your Tenant inside the database and grant EXECUTE permission
+4. Create a user from your Tenant inside the database and grant EXECUTE permission by running next commands inside query window
 
    ```sql
    CREATE USER [tenant_user_name (like alexbeyd@kkaad.onmicrosof.com)] FROM EXTERNAL PROVIDER; 
@@ -50,7 +52,7 @@ The sample demonstrates how to use an Azure SQL Database with Blazor Server App.
    grant execute to [tenant_user_name (like alexbeyd@kkaad.onmicrosof.com)]
    ```
 
-1. Add next lines to [appsettings.json](https://github.com/aremo-ms/ms-identity-dotnet-blazor-azure-sql/blob/master/appsettings.json)
+5. Add next lines to [appsettings.json](https://github.com/aremo-ms/ms-identity-dotnet-blazor-azure-sql/blob/master/appsettings.json)
 
    ```json
    "ConnectionStrings": {
