@@ -52,11 +52,11 @@ The sample demonstrates how to use an Azure SQL Database with Blazor Server App.
    grant execute to [tenant_user_name (like alexbeyd@kkaad.onmicrosof.com)]
    ```
 
-5. Add next lines to [appsettings.json](https://github.com/aremo-ms/ms-identity-dotnet-blazor-azure-sql/blob/master/appsettings.json)
+5. Add connection string to [appsettings.json](https://github.com/aremo-ms/ms-identity-dotnet-blazor-azure-sql/blob/master/appsettings.json)
 
    ```json
    "ConnectionStrings": {
-    "SqlDbContext": "Server=tcp:<server name>.database.windows.net;database=<database name>;Authentication=Active Directory Default"
+    "SqlDbContext": "Server=<your server name>;database=<your database name>;Authentication=Active Directory Default"
     }
    ```
 
