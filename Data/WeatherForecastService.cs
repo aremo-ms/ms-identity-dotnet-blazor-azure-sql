@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using ms_identity_dotnet_blazor_azure_sql.AAD;
 using ms_identity_dotnet_blazor_azure_sql.Database;

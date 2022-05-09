@@ -62,8 +62,6 @@ namespace ms_identity_dotnet_blazor_azure_sql
                     });
                 };
             });
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

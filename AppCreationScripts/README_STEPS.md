@@ -35,6 +35,8 @@ Table Of Contents
 
 ## Scenario
 
+This sample demonstrates a Blazor Server App querying an Azure SQL Database with the same authenticated user logged-in into the database.
+ In other words, SQL Database will act exactly for user logged-in instead of active with administrator access rights.
 ![Scenario Image](ReadmeFiles/topology.png)
 
 
@@ -213,6 +215,7 @@ Did the sample not work for you as expected? Did you encounter issues trying thi
 
 [Consider taking a moment to share your experience with us.](https://forms.office.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbRz0h_jLR5HNJlvkZAewyoWxUNEFCQ0FSMFlPQTJURkJZMTRZWVJRNkdRMC4u)
 </details>
+
 ## About the code
 
 <details>

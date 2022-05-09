@@ -23,7 +23,7 @@
     This section describes different regions of readme file
   */
   "ReadmeScenario": {
-    "MainText": "This sample demonstrates a Blazor Server App querying an Azure SQL Database with the same authenticated user logged-in into the database.\n",
+    "FreeText": "This sample demonstrates a Blazor Server App querying an Azure SQL Database with the same authenticated user logged-in into the database. In other words, SQL Database will act exactly for user logged-in instead of active with administrator access rights.",
     "Image": "ReadmeFiles/topology.png",
     /* put additional notes, will be displayed right after image*/
     "AdditionalNotes": "\n"
