@@ -344,5 +344,4 @@ Replace contents of the configuration by the below lines:
 
 1. Delete **counter** link from Shared/NavMenu.razor
 
-1.  
 </details>
