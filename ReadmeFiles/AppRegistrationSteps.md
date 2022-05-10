@@ -52,10 +52,10 @@ Follow the [manual steps](#Manual-steps)
 Follow the steps below for manually register and configure your apps
 
 <details>
-   <summary>Expand this section if you want to use this automation:</summary>
+   <summary>Expand this section if you want to use the steps:</summary>
 
    1. Sign in to the [Azure portal](https://portal.azure.com).
-   1. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Azure AD tenant.
+   2. If your account is present in more than one Azure AD tenant, select your profile at the top right corner in the menu on top of the page, and then **switch directory** to change your portal session to the desired Azure AD tenant.
 
 ##### Register the client app (ClientApp-blazor-azuresql)
 

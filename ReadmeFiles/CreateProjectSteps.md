@@ -45,4 +45,5 @@ or download and extract the repository .zip file.
    grant execute to [tenant_user_name (like alexbeyd@kkaad.onmicrosof.com)]
    ```
 
-6. Add connection string to [appsettings.json](https://github.com/aremo-ms/ms-identity-dotnet-blazor-azure-sql/blob/master/appsettings.json)
+6. Go to App Service Properties, copy **Virtual IP Address** value and add it to SQL Database **Firewall Settings**.
+7. Add connection string to [appsettings.json](https://github.com/aremo-ms/ms-identity-dotnet-blazor-azure-sql/blob/master/appsettings.json)
