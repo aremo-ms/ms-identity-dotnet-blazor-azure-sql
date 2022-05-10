@@ -40,6 +40,8 @@ namespace ms_identity_dotnet_blazor_azure_sql.AAD
         public async Task<string> GetAccessToken(AuthenticationState authState)
         {
             string accessToken = string.Empty;
+
+            //https://database.windows.net/.default
             var scopes = new string[] { _azureSettings["Scopes"] };
 
             try
@@ -51,7 +53,7 @@ namespace ms_identity_dotnet_blazor_azure_sql.AAD
                 AuthenticationResult authResult = await _app.AcquireTokenSilent(scopes, account).ExecuteAsync();
                 accessToken = authResult.AccessToken;
             }
-            catch (Exception)
+            catch (MsalUiRequiredException)
             {
                 _consentHandler.ChallengeUser(scopes);
                 return accessToken;

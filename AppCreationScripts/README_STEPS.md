@@ -51,6 +51,7 @@ This sample demonstrates a Blazor Server App querying an Azure SQL Database with
 
 ## Setup the sample
 
+
 ### Step 1: Clone or download this repository
 
 From your shell or command line:
@@ -63,8 +64,41 @@ or download and extract the repository .zip file.
 
 >:warning: To avoid path length limitations on Windows, we recommend cloning into a directory near the root of your drive.
 
-### Step 2: Navigate to project folder
-You don't have to change current folder. 
+### Step 2: Setup SQL Database and grant user permissions for managed identity
+
+1. Create [Azure SQL Database](https://docs.microsoft.com/en-us/azure/azure-sql/database/single-database-create-quickstart) and add your Tenant user as Admin **OR** [install local SQL server](https://www.microsoft.com/sql-server/sql-server-downloads) (Express edition is enough)
+2. Install [SQL Server Management Studio](https://docs.microsoft.com/sql/ssms/download-sql-server-management-studio-ssms) or find another way to manipulate the database if you prefer.
+3. [Create](https://docs.microsoft.com/sql/relational-databases/databases/create-a-database) an empty Database
+4. On the created database run next commands
+
+   ```sql
+   CREATE TABLE [dbo].[Summary](
+   [Summary] [nvarchar](50) NOT NULL) 
+   GO;
+   Insert into [dbo].Summary values ('Freezing'),('Bracing'),('Chilly'),('Cool'),('Mild'),('Warm'),('Balmy'),('Hot'),('Sweltering'),('Scorching')
+   GO;
+   CREATE FUNCTION [dbo].[UsernamePrintFn]()
+   RETURNS nvarchar(500)
+   AS
+   BEGIN
+       declare @host nvarchar(100), @user nvarchar(100);
+       SELECT @host = HOST_NAME() , @user = SUSER_NAME()
+       declare @result nvarchar(500) = cast(@user + ' at ' + @host as nvarchar(500))
+       -- Return the result of the function
+       return @result
+   END
+   GO
+   ```
+
+5. Create a user from your Tenant inside the database and grant EXECUTE permission by running next commands inside query window
+
+   ```sql
+   CREATE USER [tenant_user_name (like alexbeyd@kkaad.onmicrosof.com)] FROM EXTERNAL PROVIDER; 
+   EXECUTE sp_addrolemember db_datareader, [tenant_user_name (like alexbeyd@kkaad.onmicrosof.com)];
+   grant execute to [tenant_user_name (like alexbeyd@kkaad.onmicrosof.com)]
+   ```
+
+6. Add connection string to [appsettings.json](https://github.com/aremo-ms/ms-identity-dotnet-blazor-azure-sql/blob/master/appsettings.json)
 
 
 ### Step 3: Application Registration
@@ -220,6 +254,47 @@ Did the sample not work for you as expected? Did you encounter issues trying thi
 <details>
  <summary>Expand the section</summary>
 
+ The main purpose of this sample is to show how to propagate AAD user to SQL server. The scenario is as follows:
+
+ 1. Get Access Token through interactive log-in process and cache it. To enable caching we have to add the 2 last lines to AAD configuration inside Program.cs:
+
+  ```csharp
+    builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"))
+                .EnableTokenAcquisitionToCallDownstreamApi() 
+                .AddInMemoryTokenCaches();
+  ```
+
+ 2. Every time, the new SQL connection is created, acquire the cached token and add it to the connection object. If the cached token is unavailable, the MsalUiRequiredException will be thrown and interactive Authorization process will be kicked-off. Here is relevant code snippet from UserAADServices.cs:
+
+  ```csharp
+    public async Task<string> GetAccessToken(AuthenticationState authState)
+        {
+            string accessToken = string.Empty;
+
+            //https://database.windows.net/.default
+            var scopes = new string[] { _azureSettings["Scopes"] };
+
+            try
+            {
+                var accountIdentifier = GetAccountIdentifier(authState);
+
+                IAccount account = await _app.GetAccountAsync(accountIdentifier);
+
+                AuthenticationResult authResult = await _app.AcquireTokenSilent(scopes, account).ExecuteAsync();
+                accessToken = authResult.AccessToken;
+            }
+            catch (MsalUiRequiredException)
+            {
+                _consentHandler.ChallengeUser(scopes);
+                return accessToken;
+            }
+
+            return accessToken;
+        }
+  ```
+
+  > Notice that the code is using a special default scope to be able to work with SQL Server - **https://database.windows.net/.default**
 
 </details>
 
