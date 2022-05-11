@@ -11,9 +11,9 @@ or download and extract the repository .zip file.
 
 >:warning: To avoid path length limitations on Windows, we recommend cloning into a directory near the root of your drive.
 
-### Step 2: Setup SQL Database and grant user permissions for managed identity
+### Step 2: Setup Azure SQL Database and grant user permissions for managed identity
 
-1. Create [Azure SQL Database](https://docs.microsoft.com/en-us/azure/azure-sql/database/single-database-create-quickstart) and add your Tenant user as Admin **OR** [install local SQL server](https://www.microsoft.com/sql-server/sql-server-downloads) (Express edition is enough)
+1. Create [Azure SQL Database](https://docs.microsoft.com/en-us/azure/azure-sql/database/single-database-create-quickstart) and add your Tenant user as Admin
 2. Install [SQL Server Management Studio](https://docs.microsoft.com/sql/ssms/download-sql-server-management-studio-ssms) or find another way to manipulate the database if you prefer.
 3. [Create](https://docs.microsoft.com/sql/relational-databases/databases/create-a-database) an empty Database
 4. On the created database run next commands

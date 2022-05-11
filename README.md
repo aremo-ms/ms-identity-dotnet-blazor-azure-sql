@@ -64,9 +64,9 @@ or download and extract the repository .zip file.
 
 >:warning: To avoid path length limitations on Windows, we recommend cloning into a directory near the root of your drive.
 
-### Step 2: Setup SQL Database and grant user permissions for managed identity
+### Step 2: Setup Azure SQL Database and grant user permissions for managed identity
 
-1. Create [Azure SQL Database](https://docs.microsoft.com/en-us/azure/azure-sql/database/single-database-create-quickstart) and add your Tenant user as Admin **OR** [install local SQL server](https://www.microsoft.com/sql-server/sql-server-downloads) (Express edition is enough)
+1. Create [Azure SQL Database](https://docs.microsoft.com/en-us/azure/azure-sql/database/single-database-create-quickstart) and add your Tenant user as Admin
 2. Install [SQL Server Management Studio](https://docs.microsoft.com/sql/ssms/download-sql-server-management-studio-ssms) or find another way to manipulate the database if you prefer.
 3. [Create](https://docs.microsoft.com/sql/relational-databases/databases/create-a-database) an empty Database
 4. On the created database run next commands
@@ -175,7 +175,7 @@ Follow the steps below for manually register and configure your apps
       * `https://localhost:44348/`
       * `https://localhost:44348/signin-oidc`
    1. In the **Front-channel logout URL** section, set it to `https://localhost:44348/signout-oidc`.
-   1. Select **ID tokens (used for implicit and hybrid flows)** checkbox.
+   1. Select **Access tokens (used for implicit flows)** checkbox.
    1. Click **Save** to save your changes.
    1. In the app's registration screen, select the **Certificates & secrets** blade in the left to open the page where you can generate secrets and upload certificates.
    1. In the **Client secrets** section, select **New client secret**:
@@ -298,6 +298,7 @@ Did the sample not work for you as expected? Did you encounter issues trying thi
   > Notice that the code is using a special default scope to be able to work with SQL Server - **https://database.windows.net/.default**
 
 </details>
+
 
 ## How the code was created
 

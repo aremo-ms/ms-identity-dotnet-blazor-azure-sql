@@ -108,9 +108,9 @@
   */
   "CodeConfiguration": [
     {
-      "App": "client",
+      "App": "Client",
       "SettingKind": "Text",
-      "SettingFile": "\\..\\Client\\appsettings.json",
+      "SettingFile": "\\..\\appsettings.json",
       "Mappings": [
         {
           "key": "Domain",

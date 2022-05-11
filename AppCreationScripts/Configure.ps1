@@ -129,9 +129,9 @@ Function ConfigureApplications
     $clientPortalUrl = "https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/CallAnAPI/appId/"+$clientAadApplication.AppId+"/objectId/"+$clientAadApplication.Id+"/isMSAApp/"
     Add-Content -Value "<tr><td>client</td><td>$currentAppId</td><td><a href='$clientPortalUrl'>ClientApp-blazor-azuresql</a></td></tr>" -Path createdApps.html
     
-    # Update config file for 'client'
-    $configFile = $pwd.Path + "\..\Client\appsettings.json"
-    $dictionary = @{ "Domain" = $tenantName;"TenantId" = $tenantId;"ClientId" = $clientAadApplication.AppId;"ClientSecret" = $clientAppKey };
+    # Update config file for 'Client'
+    $configFile = $pwd.Path + "\..\appsettings.json"
+    $dictionary = @{ "Domain" = $tenantName;"TenantId" = $tenantId;"ClientId" = $ClientAadApplication.AppId;"ClientSecret" = $ClientAppKey };
 
     Write-Host "Updating the sample code ($configFile)"
 

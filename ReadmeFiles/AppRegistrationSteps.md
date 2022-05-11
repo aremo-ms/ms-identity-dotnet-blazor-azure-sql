@@ -72,7 +72,7 @@ Follow the steps below for manually register and configure your apps
       * `https://localhost:44348/`
       * `https://localhost:44348/signin-oidc`
    1. In the **Front-channel logout URL** section, set it to `https://localhost:44348/signout-oidc`.
-   1. Select **ID tokens (used for implicit and hybrid flows)** checkbox.
+   1. Select **Access tokens (used for implicit flows)** checkbox.
    1. Click **Save** to save your changes.
    1. In the app's registration screen, select the **Certificates & secrets** blade in the left to open the page where you can generate secrets and upload certificates.
    1. In the **Client secrets** section, select **New client secret**:
